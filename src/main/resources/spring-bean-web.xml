@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <bean id="characterEncodingFilter" class="org.springframework.web.filter.CharacterEncodingFilter">
+        <property name="encoding" value="utf-8"/>
+        <property name="forceEncoding" value="true"/>
+    </bean>
+    <bean id="exceptionFilter" class="com.aixuexi.thor.except.ExceptionFilter">
+        <property name="defaultHandler" ref="defaultExceptionHandler"/>
+        <property name="exceptionHandlers">
+            <list>
+                <ref bean="nestedServletExceptionHandler"/>
+                <!--<ref bean="gaosiDetailExceptionHandler"/>-->
+                <ref bean="baseExceptionHandler"/>
+            </list>
+        </property>
+    </bean>
+    <bean id="defaultExceptionHandler" class="com.aixuexi.thor.except.handler.DefaultExceptionHandler"/>
+
+    <!--<bean id="gaosiDetailExceptionHandler" class="com.aixuexi.common.filter.handler.GaosiDetailExceptionHandler"/>-->
+    <bean id="baseExceptionHandler" class="com.aixuexi.thor.except.handler.BaseExceptionHandler"/>
+    <bean id="nestedServletExceptionHandler" class="com.aixuexi.thor.except.handler.NestedServletExceptionHandler">
+        <property name="exceptionHandlers">
+            <list>
+                <!--<ref bean="nestedServletExceptionHandler"/>-->
+                <!--<ref bean="gaosiDetailExceptionHandler"/>-->
+                <ref bean="baseExceptionHandler"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="authenticationFilter" class="com.gaosi.api.passport.filter.AuthenticationFilter" init-method="init">
+        <property name="projectName" value="theWolverine"></property>
+        <property name="loginSystem" value="pc"></property>
+        <property name="passportAuthenticationService" ref="passportAuthenticationService"/>
+        <property name="tokenKey" value="ptaxxxzapp,ptpc"></property>
+        <property name="ignoreUrlRegex" value=".*.do$|.*/statusCheck|"/>
+        <property name="cookieDomain" value="${cookie_domain}" />
+    </bean>
+
+    <bean class="com.gaosi.api.passport.service.SessionHelper" id="sessionHelper">
+        <property name="passportAuthenticationService" ref="passportAuthenticationService"/>
+        <!-- com.gaosi.api.account.service.TeacherService 需要时注入 -->
+    </bean>
+    
+    
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">  
+        <property name="defaultEncoding" value="UTF-8"/> 
+        <property name="maxUploadSize" value="52428800"/>
+        <property name="resolveLazily" value="true"/>      
+    </bean>  
+    
+    <bean id="paramConfig" class="com.aixuexi.thewolverine.wx.config.ParamConfig">
+        <property name="wxConfig" value="${wx.config}"/>
+        <property name="wxSignUrl" value="${wx.signUrl}"/>
+    </bean>
+
+    <aop:aspectj-autoproxy/>
+    <bean class="com.netflix.hystrix.contrib.javanica.aop.aspectj.HystrixCommandAspect"/>
+    <bean class="com.aixuexi.thor.hystrix.HystrixAspect">
+        <property name="setter" value="#{T(com.aixuexi.thewolverine.util.HystrixUtils).setter}"/>
+    </bean>
+
+    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <!-- 核心线程数 -->
+        <property name="corePoolSize" value="${task.core_pool_size}" />
+        <!-- 最大线程数 -->
+        <property name="maxPoolSize" value="${task.max_pool_size}" />
+        <!-- 队列最大长度 -->
+        <property name="queueCapacity" value="${task.queue_capacity}" />
+        <!-- 线程池维护线程所允许的空闲时间，默认为60s -->
+        <property name="keepAliveSeconds" value="${task.keep_alive_seconds}" />
+    </bean>
+
+</beans>
