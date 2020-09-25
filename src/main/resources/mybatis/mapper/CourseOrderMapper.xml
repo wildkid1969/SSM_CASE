@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wildkid.dao.CourseOrderMapper">
+
+	<resultMap id="CourseOrder" type="com.wildkid.model.CourseOrder">
+		<result property="id" column="id"/>
+		<result property="order_id" column="orderId"/>
+		<result property="ins_id" column="insId"/>
+		<result property="course_id" column="courseId"/>
+	</resultMap>
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="columns">
+	    <![CDATA[
+			id,order_id,ins_id,course_id
+	    ]]>
+	</sql>
+
+	<select id="getCOurseOrderListByParam" resultMap="CourseOrder">
+		SELECT <include refid="columns" />
+		<![CDATA[
+		    FROM course_order
+	        WHERE
+		        ins_id = #{insId}
+	    ]]>
+	</select>
+
+</mapper>

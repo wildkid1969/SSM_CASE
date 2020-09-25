@@ -27,7 +27,7 @@
         <profile>
             <id>dev</id>
             <properties>
-                <package.environment>src/main/resources/dev</package.environment>
+                <package.environment>src/main/resources_dev</package.environment>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -36,19 +36,13 @@
         <profile>
             <id>onlinetest</id>
             <properties>
-                <package.environment>src/main/resources/onlinetest</package.environment>
-            </properties>
-        </profile>
-        <profile>
-            <id>preparation</id>
-            <properties>
-                <package.environment>src/main/resources/preparation</package.environment>
+                <package.environment>src/main/resources_onlinetest</package.environment>
             </properties>
         </profile>
         <profile>
             <id>production</id>
             <properties>
-                <package.environment>src/main/resources/production</package.environment>
+                <package.environment>src/main/resources_production</package.environment>
             </properties>
         </profile>
     </profiles>
@@ -82,6 +76,7 @@
                 </configuration>
             </plugin>
         </plugins>
+        <!--只把spring的xml配置文件打进去-->
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -202,6 +197,12 @@
             <version>1.2.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.8.9</version>
+        </dependency>
+
         <!-- 添加fastjson -->
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -278,6 +279,13 @@
             <groupId>com.github.binarywang</groupId>
             <artifactId>weixin-java-mp</artifactId>
             <version>${weixin-java-mp.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.10</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

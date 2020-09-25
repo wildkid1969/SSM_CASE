@@ -17,7 +17,6 @@
         <mvc:path-matching suffix-pattern="false" />
     </mvc:annotation-driven>
 
-<!--    <import resource="classpath:spring-redis.xml"/>
-    <import resource="classpath:spring-mongo.xml"/>
-    <import resource="classpath:spring-mqtt.xml"/>-->
+    <import resource="classpath:spring-datasource.xml"/>
+    <import resource="classpath:spring-tx.xml"/>
 </beans>
