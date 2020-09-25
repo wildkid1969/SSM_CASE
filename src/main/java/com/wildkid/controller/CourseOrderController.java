@@ -1,5 +1,6 @@
 package com.wildkid.controller;
 
+import com.wildkid.datasource.DynamicDataSourceHolder;
 import com.wildkid.model.CourseOrder;
 import com.wildkid.service.CourseOrderService;
 import com.wildkid.utils.ResultData;
@@ -27,6 +28,8 @@ public class CourseOrderController {
      */
     @RequestMapping(value = "getList")
     public ResultData getList(CourseOrder order){
+        //切换数据源
+        DynamicDataSourceHolder.setDbType(DynamicDataSourceHolder.DB_SLAVE);
         List<CourseOrder> orderList = courseOrderService.getCOurseOrderListByParam(order);
         return ResultData.successed(orderList);
     }

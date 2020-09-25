@@ -20,32 +20,48 @@
 		</property>
 	</bean>
 
-	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+	<bean id="abstractDataSource" abstract="true" class="com.zaxxer.hikari.HikariDataSource"  destroy-method="close">
+		<property name="connectionTimeout" value="30000" />
+		<property name="idleTimeout" value="600000" />
+		<property name="maxLifetime" value="1800000" />
+
+	</bean>
+
+	<bean id="master" parent="abstractDataSource">
 		<property name="driverClassName" value="${jdbc.driverClassName}" />
-		<property name="url" value="${jdbc.url}" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
 		<property name="username" value="${jdbc.username}" />
 		<property name="password" value="${jdbc.password}" />
-		<!--initialSize: 初始化连接 -->
-		<property name="initialSize" value="1" />
-		<!--maxIdle: 最大空闲连接 -->
-		<property name="maxIdle" value="10" />
-		<!--minIdle: 最小空闲连接 -->
-		<property name="minIdle" value="5" />
-		<!--maxActive: 最大连接数量 -->
-		<property name="maxActive" value="15" />
-		<!--maxWait: 超时等待时间以毫秒为单位30000毫秒/1000等于30秒 -->
-		<property name="maxWait" value="30000" />
-		<property name="validationQuery">
-			<value>SELECT 1  from dual</value>
-		</property>
-		<property name="testOnBorrow">
-			<value>true</value>
+		<property name="readOnly" value="false" />
+		<property name="maximumPoolSize" value="3" />
+	</bean>
+
+	<bean id="slave" parent="abstractDataSource">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="readOnly" value="true" />
+		<property name="maximumPoolSize" value="20" />
+	</bean>
+
+	<bean id="dynamicDataSource" class="com.wildkid.datasource.DynamicDataSource">
+		<property name="targetDataSources">
+			<map>
+				<entry value-ref="master" key="master"></entry>
+				<entry value-ref="slave" key="slave"></entry>
+			</map>
 		</property>
 	</bean>
 
-	<!-- 配置sqlSessionFactory -->
-	<bean id="sqlSessionFactory" 
-		class="org.mybatis.spring.SqlSessionFactoryBean">
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy">
+		<property name="targetDataSource">
+			<ref bean="dynamicDataSource"></ref>
+		</property>
+	</bean>
+
+	<bean id="sqlSessionFactory"
+		  class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="configLocation" value="classpath:mybatis/mybatis-config.xml" />
 		<property name="dataSource" ref="dataSource" />
 		<property name="typeAliasesPackage" value="com.wildkid.model" />
@@ -60,6 +76,10 @@
 	<bean name="MapperScanner" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 		<property name="basePackage" value="com.wildkid.dao" />
 		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+
+	<bean name="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
 	</bean>
 
 </beans>
