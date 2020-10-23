@@ -30,7 +30,13 @@ public class CourseOrderController {
     public ResultData getList(CourseOrder order){
         //切换数据源
         DynamicDataSourceHolder.setDbType(DynamicDataSourceHolder.DB_SLAVE);
-        List<CourseOrder> orderList = courseOrderService.getCOurseOrderListByParam(order);
+        List<CourseOrder> orderList = courseOrderService.getCourseOrderListByParam(order);
+        return ResultData.successed(orderList);
+    }
+
+    @RequestMapping(value = "getDetailList")
+    public ResultData getDetailList(CourseOrder order){
+        List<CourseOrder> orderList = courseOrderService.getCourseOrderDetailListByParam(order);
         return ResultData.successed(orderList);
     }
 }

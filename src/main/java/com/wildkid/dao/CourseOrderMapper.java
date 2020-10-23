@@ -9,5 +9,6 @@ import java.util.List;
  * @Date: 2020-09-25 17:31
  */
 public interface CourseOrderMapper {
-    List<CourseOrder> getCOurseOrderListByParam(CourseOrder order);
+    List<CourseOrder> getCourseOrderListByParam(CourseOrder order);
+    List<CourseOrder> getCourseOrderDetailListByParam(CourseOrder order);
 }

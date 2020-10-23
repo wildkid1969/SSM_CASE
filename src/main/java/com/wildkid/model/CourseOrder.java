@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Author: mengya
@@ -45,5 +46,7 @@ public class CourseOrder implements Serializable {
     private Integer source;
     //订单确收状态 0:未确收 1:已确收
     private Integer confirmIncomeStatus;
+
+    private List<CourseUserId> courseUserIdList;
 
 }

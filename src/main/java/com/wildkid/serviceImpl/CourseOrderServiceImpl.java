@@ -18,7 +18,12 @@ public class CourseOrderServiceImpl implements CourseOrderService {
     private CourseOrderMapper courseOrderMapper;
 
     @Override
-    public List<CourseOrder> getCOurseOrderListByParam(CourseOrder order) {
-        return courseOrderMapper.getCOurseOrderListByParam(order);
+    public List<CourseOrder> getCourseOrderListByParam(CourseOrder order) {
+        return courseOrderMapper.getCourseOrderListByParam(order);
+    }
+
+    @Override
+    public List<CourseOrder> getCourseOrderDetailListByParam(CourseOrder order) {
+        return courseOrderMapper.getCourseOrderDetailListByParam(order);
     }
 }

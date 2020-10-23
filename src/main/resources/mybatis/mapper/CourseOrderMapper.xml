@@ -9,6 +9,14 @@
 		<result property="course_id" column="courseId"/>
 	</resultMap>
 
+	<resultMap id="CourseOrderDetail" type="com.wildkid.model.CourseOrder">
+		<result property="id" column="id"/>
+		<result property="order_id" column="orderId"/>
+		<result property="ins_id" column="insId"/>
+		<result property="course_id" column="courseId"/>
+		<collection property="courseUserIdList" ofType="com.wildkid.model.CourseUserId" />
+	</resultMap>
+
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="columns">
 	    <![CDATA[
@@ -16,7 +24,16 @@
 	    ]]>
 	</sql>
 
-	<select id="getCOurseOrderListByParam" resultMap="CourseOrder">
+	<select id="getCourseOrderListByParam" resultMap="CourseOrder">
+		SELECT <include refid="columns" />
+		<![CDATA[
+		    FROM course_order
+	        WHERE
+		        ins_id = #{insId}
+	    ]]>
+	</select>
+
+	<select id="getCourseOrderDetailListByParam" resultMap="CourseOrder">
 		SELECT <include refid="columns" />
 		<![CDATA[
 		    FROM course_order
