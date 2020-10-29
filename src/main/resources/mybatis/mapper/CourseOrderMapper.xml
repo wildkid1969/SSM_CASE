@@ -4,17 +4,44 @@
 
 	<resultMap id="CourseOrder" type="com.wildkid.model.CourseOrder">
 		<result property="id" column="id"/>
-		<result property="order_id" column="orderId"/>
-		<result property="ins_id" column="insId"/>
-		<result property="course_id" column="courseId"/>
+		<result property="orderId" column="order_id"/>
+		<result property="insId" column="ins_id"/>
+		<result property="courseId" column="course_id"/>
+	</resultMap>
+
+	<resultMap id="Course" type="com.wildkid.model.Course">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="status" column="status"/>
 	</resultMap>
 
 	<resultMap id="CourseOrderDetail" type="com.wildkid.model.CourseOrder">
 		<result property="id" column="id"/>
-		<result property="order_id" column="orderId"/>
-		<result property="ins_id" column="insId"/>
-		<result property="course_id" column="courseId"/>
-		<collection property="courseUserIdList" ofType="com.wildkid.model.CourseUserId" />
+		<result property="orderId" column="order_id"/>
+		<result property="insId" column="ins_id"/>
+		<result property="courseId" column="course_id"/>
+		<collection property="courseUserIdList" ofType="com.wildkid.model.CourseUserId">
+			<result property="userId" column="user_id" />
+			<result property="operatorUser" column="operator_user" />
+			<result property="status" column="status" />
+			<result property="createTime" column="create_time" />
+			<result property="signSuccessTime" column="sign_success_time" />
+		</collection>
+	</resultMap>
+
+	<!-- association:通过association实现了分步查询，在一定程度上简化了sql语句，
+	另外association还支持延迟加载（懒加载）:在mybatis-config.xml配置，然后java对象调用的时候(getXXX)才会去查询
+	association定义关联对象的封装规则
+	 		select:表明当前属性是调用select指定的方法查出的结果
+	 		column:指定将哪一列的值传给这个方法
+	 		流程：使用select指定的方法（传入column指定的这列参数的值）查出对象，并封装给property指定的属性
+	-->
+	<resultMap id="CourseOrderDetailByOrderId" type="com.wildkid.model.CourseOrder">
+		<result property="id" column="id"/>
+		<result property="orderId" column="order_id"/>
+		<result property="insId" column="ins_id"/>
+		<result property="courseId" column="course_id"/>
+		<association property="course" column="id" select="com.wildkid.dao.CourseOrderMapper.getCourseById" />
 	</resultMap>
 
 	<!-- 用于select查询公用抽取的列 -->
@@ -24,7 +51,7 @@
 	    ]]>
 	</sql>
 
-	<select id="getCourseOrderListByParam" resultMap="CourseOrder">
+	<select id="getCourseOrderListByParam" resultMap="CourseOrder" parameterType="java.lang.Integer">
 		SELECT <include refid="columns" />
 		<![CDATA[
 		    FROM course_order
@@ -33,12 +60,40 @@
 	    ]]>
 	</select>
 
-	<select id="getCourseOrderDetailListByParam" resultMap="CourseOrder">
+	<select id="getCourseOrderDetailListByParam" resultMap="CourseOrderDetail" parameterType="CourseOrder">
+		SELECT o.*,cui.USER_ID,cui.`STATUS`,cui.user_name,cui.operator_user,cui.create_time,cui.sign_success_time
+		<![CDATA[
+		    FROM course_user_order o
+		    LEFT JOIN course_user_id cui ON o.course_user_id=cui.ID
+	        WHERE
+	        	o.COURSE_ID = #{courseId} AND cui.`STATUS` IN (1,4,6,7)
+	    ]]>
+		<if test="insId != null and insId != ''">
+			and o.ins_id = #{insId}
+		</if>
+		<if test="userName != null and userName != ''">
+			and cui.user_name like concat('%',#{userName},'%')
+		</if>
+	</select>
+
+	<select id="getCourseOrderDetailListByOrderId" resultMap="CourseOrderDetailByOrderId" parameterType="CourseOrder">
+		SELECT o.*
+		<![CDATA[
+		    FROM course_order o
+	        WHERE
+	        	o.order_id = #{orderId}
+	    ]]>
+		<if test="insId != null and insId != ''">
+			and o.ins_id = #{insId}
+		</if>
+	</select>
+
+	<select id="getCourseById" resultMap="Course" parameterType="java.lang.Integer">
 		SELECT <include refid="columns" />
 		<![CDATA[
-		    FROM course_order
+		    FROM course
 	        WHERE
-		        ins_id = #{insId}
+		        id = #{id}
 	    ]]>
 	</select>
 

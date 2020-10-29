@@ -28,6 +28,8 @@ public class CourseOrder implements Serializable {
     private String orderId;
     //课程Id
     private Integer courseId;
+    //用户名
+    private String userName;
     //部门Id
     private Integer departmentId;
     //订单状态 0 无效 1 普通订单 2 后台补报订单 3 用户已取消订单
@@ -47,6 +49,7 @@ public class CourseOrder implements Serializable {
     //订单确收状态 0:未确收 1:已确收
     private Integer confirmIncomeStatus;
 
+    private Course course;
     private List<CourseUserId> courseUserIdList;
 
 }

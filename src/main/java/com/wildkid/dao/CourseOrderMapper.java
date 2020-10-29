@@ -1,5 +1,6 @@
 package com.wildkid.dao;
 
+import com.wildkid.model.Course;
 import com.wildkid.model.CourseOrder;
 
 import java.util.List;
@@ -11,4 +12,5 @@ import java.util.List;
 public interface CourseOrderMapper {
     List<CourseOrder> getCourseOrderListByParam(CourseOrder order);
     List<CourseOrder> getCourseOrderDetailListByParam(CourseOrder order);
+    Course getCourseById(Integer id);
 }
