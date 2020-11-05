@@ -16,5 +16,7 @@ import lombok.NoArgsConstructor;
 public class Course {
     private Integer id;
     private String name;
+    private Integer courseType;
+    private Double originalPrice;
     private Integer status;
 }

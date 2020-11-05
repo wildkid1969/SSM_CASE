@@ -39,4 +39,10 @@ public class CourseOrderController {
         List<CourseOrder> orderList = courseOrderService.getCourseOrderDetailListByParam(order);
         return ResultData.successed(orderList);
     }
+
+    @RequestMapping(value = "getDetail")
+    public ResultData getCourseOrderDetailListByOrderId(CourseOrder order){
+        List<CourseOrder> orderList = courseOrderService.getCourseOrderDetailListByOrderId(order);
+        return ResultData.successed(orderList);
+    }
 }

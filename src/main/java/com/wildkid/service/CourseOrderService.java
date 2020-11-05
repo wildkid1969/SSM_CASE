@@ -11,4 +11,5 @@ import java.util.List;
 public interface CourseOrderService {
     List<CourseOrder> getCourseOrderListByParam(CourseOrder order);
     List<CourseOrder> getCourseOrderDetailListByParam(CourseOrder order);
+    List<CourseOrder> getCourseOrderDetailListByOrderId(CourseOrder order);
 }

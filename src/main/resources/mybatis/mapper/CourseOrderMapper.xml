@@ -12,28 +12,44 @@
 	<resultMap id="Course" type="com.wildkid.model.Course">
 		<result property="id" column="id"/>
 		<result property="name" column="name"/>
+		<result property="courseType" column="course_type"/>
+		<result property="originalPrice" column="original_price"/>
 		<result property="status" column="status"/>
 	</resultMap>
 
+	<!--result里的属性：
+		column="表的一个字段（可以为任意表的一个字段）,也可以是字段别名"
+		jdbcType="字段类型"
+		javaType="pojo关联的pojo对象"
+		property="映射到pojo对象的一个属性（须为type定义的pojo对象中的一个属性） -->
 	<resultMap id="CourseOrderDetail" type="com.wildkid.model.CourseOrder">
 		<result property="id" column="id"/>
 		<result property="orderId" column="order_id"/>
 		<result property="insId" column="ins_id"/>
 		<result property="courseId" column="course_id"/>
+		<!-- collection：一对多关系，实现了分步查询，同association一样，支持延迟加载（懒加载）
+		collection里的属性：
+				property="类里的关联属性"
+				ofType="映射的pojo类型"
+				select:表明当前属性是调用select指定的方法查出的结果（select或以下方式任选其一）
+	 			column:传递给select方法的值
+		 -->
 		<collection property="courseUserIdList" ofType="com.wildkid.model.CourseUserId">
+			<result property="id" column="courseUserId" />
 			<result property="userId" column="user_id" />
+			<result property="userName" column="user_name" />
 			<result property="operatorUser" column="operator_user" />
-			<result property="status" column="status" />
+			<result property="status" column="cstatus" />
 			<result property="createTime" column="create_time" />
 			<result property="signSuccessTime" column="sign_success_time" />
 		</collection>
 	</resultMap>
 
-	<!-- association:通过association实现了分步查询，在一定程度上简化了sql语句，
+	<!-- association:一对一关系，通过association实现了分步查询，在一定程度上简化了sql语句，
 	另外association还支持延迟加载（懒加载）:在mybatis-config.xml配置，然后java对象调用的时候(getXXX)才会去查询
 	association定义关联对象的封装规则
 	 		select:表明当前属性是调用select指定的方法查出的结果
-	 		column:指定将哪一列的值传给这个方法
+	 		column:传递给select方法的值
 	 		流程：使用select指定的方法（传入column指定的这列参数的值）查出对象，并封装给property指定的属性
 	-->
 	<resultMap id="CourseOrderDetailByOrderId" type="com.wildkid.model.CourseOrder">
@@ -41,7 +57,9 @@
 		<result property="orderId" column="order_id"/>
 		<result property="insId" column="ins_id"/>
 		<result property="courseId" column="course_id"/>
-		<association property="course" column="id" select="com.wildkid.dao.CourseOrderMapper.getCourseById" />
+		<association property="course"
+					 column="course_id"
+					 select="com.wildkid.dao.CourseOrderMapper.getCourseById" />
 	</resultMap>
 
 	<!-- 用于select查询公用抽取的列 -->
@@ -61,7 +79,8 @@
 	</select>
 
 	<select id="getCourseOrderDetailListByParam" resultMap="CourseOrderDetail" parameterType="CourseOrder">
-		SELECT o.*,cui.USER_ID,cui.`STATUS`,cui.user_name,cui.operator_user,cui.create_time,cui.sign_success_time
+		SELECT o.*,o.course_user_order_id id,
+		cui.id courseUserId,cui.USER_ID,cui.`STATUS` cstatus,cui.user_name,cui.operator_user,cui.create_time,cui.sign_success_time
 		<![CDATA[
 		    FROM course_user_order o
 		    LEFT JOIN course_user_id cui ON o.course_user_id=cui.ID
@@ -89,7 +108,7 @@
 	</select>
 
 	<select id="getCourseById" resultMap="Course" parameterType="java.lang.Integer">
-		SELECT <include refid="columns" />
+		SELECT id,name,course_type,original_price,status
 		<![CDATA[
 		    FROM course
 	        WHERE

@@ -12,5 +12,6 @@ import java.util.List;
 public interface CourseOrderMapper {
     List<CourseOrder> getCourseOrderListByParam(CourseOrder order);
     List<CourseOrder> getCourseOrderDetailListByParam(CourseOrder order);
+    List<CourseOrder> getCourseOrderDetailListByOrderId(CourseOrder order);
     Course getCourseById(Integer id);
 }
